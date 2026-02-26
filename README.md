@@ -1,78 +1,83 @@
 Conditional Escrow (WETH) + External API + Chainlink CRE (E2E Demo)
 
 A demo project showcasing a conditional WETH escrow with full workflow orchestration:
+Blockchain Event → External API → Cryptographic Verification → Chainlink Secure Write → Onchain Payout
+Built for hackathon / technical demo purposes.
 
-Blockchain event → External API → Cryptographic verification → Chainlink secure write → Onchain payout
 
-This project was built for hackathon / technical demo purposes.
+📌 About the Project
 
-1️⃣ About the Project (Short Overview)
+This project demonstrates a conditional WETH escrow on Ethereum mainnet.
+Workflow
 
-This project demonstrates a conditional WETH escrow on Ethereum mainnet:
+Payer
+Creates an agreement
+Deposits WETH into escrow
 
-Payer creates an agreement and deposits WETH into the escrow contract.
+Worker / Payee
+Performs an onchain task (DemoConfig.setConfig)
+Sends signed completion claim to external API
 
-Worker / Payee performs an onchain task (writes a value into DemoConfig).
+Chainlink CRE
+Listens for EscrowSignal
+Verifies API status + worker signature
+Performs secure write (writeReport)
 
-Worker sends a signed completion claim to an external API.
+Escrow Contract
+executeIfSatisfied(id)
+Releases WETH payout
 
-Chainlink CRE workflow catches the onchain EscrowSignal event, checks task status via the API + verifies the worker’s signature, then performs a secure write (writeReport) back onchain.
+🎯 Goal: demonstrate real orchestration of
 
-Finally, executeIfSatisfied(id) is called and the escrow releases WETH to the worker (payout).
-
-🎯 Goal of this demo: show real orchestration of
-blockchain event → external API → cryptographic verification → onchain write → payout.
+Blockchain → API → Crypto Verification → Onchain Write → Payout
 
 ⚙️ Tech Stack
 
 Hardhat + TypeScript
-
 Ethereum Mainnet
-
-WETH (ERC-20) — escrow asset
-
+WETH (ERC-20) escrow asset
 External Task API
-
 Chainlink CRE CLI
+Etherscan for verification
 
-Etherscan — transaction verification
 
 🧩 Architecture
-Payer → Escrow Contract → EscrowSignal
-           ↓
-     Chainlink CRE Workflow
-           ↓
-External API + Signature Verify
-           ↓
-        writeReport
-           ↓
- executeIfSatisfied → WETH payout
-✅ Prerequisites
-1. Two Wallets
-
-You need 2 accounts / private keys:
 
 Payer
+   ↓
+Escrow Contract ── EscrowSignal Event
+   ↓
+Chainlink CRE Workflow
+   ↓
+External API + Signature Verification
+   ↓
+writeReport (secure onchain write)
+   ↓
+executeIfSatisfied → WETH payout
 
-creates agreement
+<img width="377" height="658" alt="image" src="https://github.com/user-attachments/assets/9c9d8838-5753-4b81-a99b-392bf08c5d03" />
 
-deposits WETH
 
-executes payout
+
+
+✅ Prerequisites
+1. Two Wallets
+You need 2 accounts / private keys.
+
+Payer
+Creates agreement
+Deposits WETH
+Executes payout
 
 Worker / Payee
+Runs onchain task (setConfig)
+Submits completion claim
 
-performs onchain task (setConfig)
+👉 Create two MetaMask accounts and export keys into .env.
 
-submits completion claim
-
-👉 You can create two MetaMask accounts and export private keys into .env.
-
-On mainnet, payer must have:
-
+Payer must have:
 ETH for gas
-
-some WETH for deposit
+Some WETH
 
 2. Environment Variables
 
@@ -86,88 +91,72 @@ DEMO_CONFIG_ADDRESS=
 WETH_ADDRESS=
 API_URL=
 
-⚠️ Never commit .env to GitHub.
+⚠️ Never commit .env to GitHub
 
 🚀 E2E Runbook (Jury Quickstart)
 
-After each step, save txHash and ID — these are your proofs.
+Save all tx hashes and IDs as proof.
 
 Step 1 — Create Agreement + Deposit
 HOURS=1 npm run demo:create
 
 Save:
+ID
+CREATE_TX
+DEPOSIT_TX
+EVENT_INDEX
 
-newAgreementId = <ID>
-CREATE_TX = <CREATE_TX>
-DEPOSIT_TX = <DEPOSIT_TX>
-EVENT_INDEX = <EVENT_INDEX>
 Step 2 — Worker Onchain Task
 KEY=<ID> VALUE=777 npm run demo:setconfig
 
 Save:
+WORK_TX
 
-WORK_TX = <WORK_TX>
 Step 3 — Completion Claim via API
 ID=<ID> KEY=<ID> VALUE=777 TX=<WORK_TX> npm run demo:complete
 
 Check:
-
 status: completed
+
 Step 4 — Chainlink CRE Workflow
 cd eth-condition
 cre workflow simulate . --target production-settings --broadcast
 
-Enter when prompted:
-
-transaction hash → <DEPOSIT_TX>
-event index → <EVENT_INDEX>
-
+Enter:
+transaction hash → DEPOSIT_TX
+event index → EVENT_INDEX
 Save:
+WRITEREPORT_TX
 
-WRITEREPORT_TX = <WRITEREPORT_TX>
 Step 5 — Execute Payout
 ID=<ID> npm run demo:execute
 
 Save:
-
-EXECUTE_TX = <EXECUTE_TX>
-
-Verify ERC-20 Transfer in Etherscan.
+EXECUTE_TX
+Verify ERC-20 transfer in Etherscan.
 
 🏁 Jury Proof Checklist
+✅ CREATE_TX
+✅ DEPOSIT_TX
+✅ WORK_TX
+✅ WRITEREPORT_TX
+✅ EXECUTE_TX
 
-Minimum 5 transactions:
-
-CREATE_TX
-
-DEPOSIT_TX
-
-WORK_TX
-
-WRITEREPORT_TX
-
-EXECUTE_TX
 
 ⚠️ Common Issues
 Execute Transaction Stuck
-
 Possible reasons:
-
-pending transaction
-
-nonce conflict
-
+Pending transaction
+Nonce conflict
 Solution:
-
-check EXECUTE_TX in Etherscan
-
-speed up or cancel earlier pending tx
+Check EXECUTE_TX in Etherscan
+Speed up or cancel earlier tx
 
 Hardhat Error -- --key on Windows
-
 Use ENV format:
-
 KEY=... VALUE=... npm run demo:setconfig
+
+
 📁 Project Structure
 contracts/
 scripts/
@@ -175,16 +164,9 @@ eth-condition/        # Chainlink CRE workflow
 api/                  # External API
 test/
 .env.example
-🔐 Security
-
-Never publish private keys
-
-Use testnet for development
 
 🤝 Contact
-
 Telegram: @Top_horse
 
 📜 License
-
 MIT
