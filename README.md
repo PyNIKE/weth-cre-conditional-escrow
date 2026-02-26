@@ -188,6 +188,7 @@ test/
 
 ## 🤝 Contact
 Telegram: @Top_horse
+Discord: sushi_killer
 
 
 ## 📜 License
