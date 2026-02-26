@@ -34,7 +34,7 @@ Blockchain → API → Crypto Verification → Onchain Write → Payout
 
 
 
-##⚙️ Tech Stack
+##⚙️Tech Stak
 
 Hardhat + TypeScript
 Ethereum Mainnet
@@ -43,7 +43,8 @@ External Task API
 Chainlink CRE CLI
 Etherscan for verification
 
-  ## 🌐 External API
+
+## 🌐 External API 
 This demo uses a public task-verification API.
 API Base URL:
 API_BASE_URL=https://api.147.182.247.224.nip.io
