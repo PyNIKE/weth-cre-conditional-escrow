@@ -166,7 +166,7 @@ Verify ERC-20 transfer in Etherscan.
 ## 🎬 Demo Video
 
 Watch the full E2E demo here:  
-https://www.youtube.com/watch?v=YXql6lQBDqE
+https://www.youtube.com/watch?v=Tt1A9xy7zk0
 
 
 ## ⚠️ Common Issues
